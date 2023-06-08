@@ -14,7 +14,7 @@ import "./index.css";
 //    - a component is mounted: refetchOnReconnect
 //    - the window is refocused: refetchOnWindowFocus
 // Once the app got the fresh data from the backend it will update the cache and notify the browser that new data is available. The component will then rerender with fresh data.
-const queryClient = new QueryClient({
+/* const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 3,
@@ -25,7 +25,9 @@ const queryClient = new QueryClient({
       refetchOnMount: false, // default value is true
     },
   },
-});
+}); */
+
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
