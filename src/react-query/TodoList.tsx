@@ -19,8 +19,8 @@ const TodoList = () => {
       .get<Todo[]>("https://jsonplaceholder.typicode.com/todos")
       .then((res) => res.data);
 
-  // Get the data property from the response, which we have renamed "todos"
-  const { data: todos } = useQuery({
+  // Get the data property from the response, which we have renamed "todos" and get the error
+  const { data: todos, error } = useQuery<Todo[], Error>({
     // queryKey: unique identifier for the query, it's used internally for caching.
     // Anytime we retrieve data from the backend,
     // it will be stored in the cache and will be accessible via this key
@@ -40,9 +40,9 @@ const TodoList = () => {
       .get("https://jsonplaceholder.typicode.com/todos")
       .then((res) => setTodos(res.data))
       .catch((error) => setError(error));
-  }, []); 
+  }, []); */
 
-  if (error) return <p>{error}</p>; */
+  if (error) return <p>{error.message}</p>;
 
   return (
     <ul className="list-group">
