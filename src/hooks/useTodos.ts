@@ -26,6 +26,7 @@ const useTodos = () => {
         queryKey: ["todos"],
         // queryFn: used to fetch the data from the backend
         queryFn: fetchTodos,
+        staleTime: 10 * 1000 // either configure staleTime individually for every request or globally in the main.tsx file
       });
 }
 
