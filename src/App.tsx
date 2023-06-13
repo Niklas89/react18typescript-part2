@@ -3,6 +3,7 @@ import PostList from "./react-query/PostList";
 import PostListInfiniteQueries from "./react-query/PostListInfiniteQueries";
 import PostListPageNb from "./react-query/PostListPageNb";
 import TodoForm from "./react-query/TodoForm";
+import TodoFormOnMutate from "./react-query/TodoFormOnMutate";
 import TodoList from "./react-query/TodoList";
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
 
   return (
     <>
-      <TodoForm />
+      <TodoFormOnMutate />
       <TodoList />
     </>
   );
