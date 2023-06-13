@@ -1,40 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { Todo } from "../hooks/useTodos";
-import axios from "axios";
+import useAddTodo from "../hooks/useAddTodo";
 
 const TodoForm = () => {
-  // get the QueryClient that we defined in main.tsx
-  const queryClient = useQueryClient();
-
-  // useMutation(TData - data that we get from the backend, TError - our error object, TVariables - the data that we send to the backend)
-  const addTodo = useMutation<Todo, Error, Todo>({
-    mutationFn: (todo: Todo) =>
-      axios
-        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
-        .then((res) => res.data),
-    onSuccess: (savedTodo, newTodo) => {
-      // onSuccess: (savedTodo: todo from the backend, newTodo: todo created on the client) Callback
-
-      // APPROACH 1: Invalidating the cache - delete the cache and get new data from the backend with the new todo in it
-      // this approach doesn't work with jsonplaceholder API because it's a fake API, but otherwise it works
-      // queryClient.invalidateQueries({
-      //   queryKey: ["todos"], // invalidate all queries whose key start with "todos"
-      // })
-
-      // APPROACH 2: Updating the data in the cache directly
-      // queryClient.setQueryData(the key to what we are updating,
-      // updating function that takes an array of todos - we pass todos and return an array of todos)
-      queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
-        savedTodo,
-        ...(todos || []),
-      ]);
-
-      // clear input field after post
-      if (ref.current) ref.current.value = "";
-    },
-  });
   const ref = useRef<HTMLInputElement>(null);
+  const addTodo = useAddTodo(() => {
+    if (ref.current) ref.current.value = "";
+  });
 
   return (
     <>

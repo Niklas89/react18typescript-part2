@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { CACHE_KEY_TODOS } from "../react-query/constants";
 
 export interface Todo {
     id: number;
@@ -23,7 +24,8 @@ const useTodos = () => {
         // Anytime we retrieve data from the backend,
         // it will be stored in the cache and will be accessible via this key
         // it can store multiple values, like: queryKey: ["todos", "completed", { completed: true }]
-        queryKey: ["todos"],
+        // queryKey: ["todos"],
+        queryKey: CACHE_KEY_TODOS,
         // queryFn: used to fetch the data from the backend
         queryFn: fetchTodos,
         staleTime: 10 * 1000 // either configure staleTime individually for every request or globally in the main.tsx file

@@ -3,48 +3,35 @@ import { useRef } from "react";
 import { Todo } from "../hooks/useTodos";
 import axios from "axios";
 
-interface AddTodoContext {
-  previousTodos: Todo[];
-}
-
-const TodoFormOnMutate = () => {
+const TodoFormFirstVersion = () => {
   // get the QueryClient that we defined in main.tsx
   const queryClient = useQueryClient();
 
-  // useMutation(TData - data that we get from the backend, TError - our error object, TVariables - the data that we send to the backend, the context)
-  const addTodo = useMutation<Todo, Error, Todo, AddTodoContext>({
+  // useMutation(TData - data that we get from the backend, TError - our error object, TVariables - the data that we send to the backend)
+  const addTodo = useMutation<Todo, Error, Todo>({
     mutationFn: (todo: Todo) =>
       axios
         .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
         .then((res) => res.data),
-    // onMutate: (variable data that we send to the back)
-    // onMutate Callback - return a context object with the previous todos
-    // we update the query cache so the UI gets updated right away - no loading time
-    onMutate: (newTodo: Todo) => {
-      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]) || [];
-
-      queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
-        newTodo,
-        ...(todos || []),
-      ]);
-      // clear input field after post
-      if (ref.current) ref.current.value = "";
-
-      // return a context object that returns the previous data, used in case our request fails
-      return { previousTodos };
-    },
-
     onSuccess: (savedTodo, newTodo) => {
       // onSuccess: (savedTodo: todo from the backend, newTodo: todo created on the client) Callback
-      queryClient.setQueryData<Todo[]>(["todos"], (todos) =>
-        // if todo equals the created todo in the client we replaced it with the todo from the backend, else we keep the same todo
-        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
-      );
-    },
 
-    onError: (error, newTodo, context) => {
-      if (!context) return;
-      queryClient.setQueryData<Todo[]>(["todos"], context.previousTodos);
+      // APPROACH 1: Invalidating the cache - delete the cache and get new data from the backend with the new todo in it
+      // this approach doesn't work with jsonplaceholder API because it's a fake API, but otherwise it works
+      // queryClient.invalidateQueries({
+      //   queryKey: ["todos"], // invalidate all queries whose key start with "todos"
+      // })
+
+      // APPROACH 2: Updating the data in the cache directly
+      // queryClient.setQueryData(the key to what we are updating,
+      // updating function that takes an array of todos - we pass todos and return an array of todos)
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
+        savedTodo,
+        ...(todos || []),
+      ]);
+
+      // clear input field after post
+      if (ref.current) ref.current.value = "";
     },
   });
   const ref = useRef<HTMLInputElement>(null);
@@ -84,4 +71,4 @@ const TodoFormOnMutate = () => {
   );
 };
 
-export default TodoFormOnMutate;
+export default TodoFormFirstVersion;
