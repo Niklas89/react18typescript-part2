@@ -7,10 +7,11 @@ const TodoForm = () => {
   // get the QueryClient that we defined in main.tsx
   const queryClient = useQueryClient();
 
-  const addTodo = useMutation({
+  // useMutation(TData - data that we get from the backend, TError - our error object, TVariables - the data that we send to the backend)
+  const addTodo = useMutation<Todo, Error, Todo>({
     mutationFn: (todo: Todo) =>
       axios
-        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
+        .post<Todo>("https://jsonplaceholder.typicode.com/todosx", todo)
         .then((res) => res.data),
     onSuccess: (savedTodo, newTodo) => {
       // APPROACH 1: Invalidating the cache - delete the cache and get new data from the backend with the new todo in it
@@ -31,30 +32,35 @@ const TodoForm = () => {
   const ref = useRef<HTMLInputElement>(null);
 
   return (
-    <form
-      className="row mb-3"
-      onSubmit={(event) => {
-        event.preventDefault();
+    <>
+      {addTodo.error && (
+        <div className="alert alert-danger">{addTodo.error.message}</div>
+      )}
+      <form
+        className="row mb-3"
+        onSubmit={(event) => {
+          event.preventDefault();
 
-        // React Query will send our data to the backend using our mutationFn
-        // We will pass a todo object which will be passed to "mutationFn: (todo: Todo)"
-        if (ref.current && ref.current.value) {
-          addTodo.mutate({
-            id: 0,
-            title: ref.current?.value,
-            completed: false,
-            userId: 1,
-          });
-        }
-      }}
-    >
-      <div className="col">
-        <input ref={ref} type="text" className="form-control" />
-      </div>
-      <div className="col">
-        <button className="btn btn-primary">Add</button>
-      </div>
-    </form>
+          // React Query will send our data to the backend using our mutationFn
+          // We will pass a todo object which will be passed to "mutationFn: (todo: Todo)"
+          if (ref.current && ref.current.value) {
+            addTodo.mutate({
+              id: 0,
+              title: ref.current?.value,
+              completed: false,
+              userId: 1,
+            });
+          }
+        }}
+      >
+        <div className="col">
+          <input ref={ref} type="text" className="form-control" />
+        </div>
+        <div className="col">
+          <button className="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </>
   );
 };
 
