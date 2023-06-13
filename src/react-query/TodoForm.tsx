@@ -1,10 +1,53 @@
-import { useRef } from 'react';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
+import { Todo } from "../hooks/useTodos";
+import axios from "axios";
 
 const TodoForm = () => {
+  // get the QueryClient that we defined in main.tsx
+  const queryClient = useQueryClient();
+
+  const addTodo = useMutation({
+    mutationFn: (todo: Todo) =>
+      axios
+        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
+        .then((res) => res.data),
+    onSuccess: (savedTodo, newTodo) => {
+      // APPROACH 1: Invalidating the cache - delete the cache and get new data from the backend with the new todo in it
+      // this approach doesn't work with jsonplaceholder API because it's a fake API, but otherwise it works
+      // queryClient.invalidateQueries({
+      //   queryKey: ["todos"], // invalidate all queries whose key start with "todos"
+      // })
+
+      // APPROACH 2: Updating the data in the cache directly
+      // queryClient.setQueryData(the key to what we are updating,
+      // updating function that takes an array of todos - we pass todos and return an array of todos)
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
+        savedTodo,
+        ...(todos || []),
+      ]);
+    },
+  });
   const ref = useRef<HTMLInputElement>(null);
 
   return (
-    <form className="row mb-3">
+    <form
+      className="row mb-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        // React Query will send our data to the backend using our mutationFn
+        // We will pass a todo object which will be passed to "mutationFn: (todo: Todo)"
+        if (ref.current && ref.current.value) {
+          addTodo.mutate({
+            id: 0,
+            title: ref.current?.value,
+            completed: false,
+            userId: 1,
+          });
+        }
+      }}
+    >
       <div className="col">
         <input ref={ref} type="text" className="form-control" />
       </div>
