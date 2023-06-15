@@ -32,10 +32,14 @@ const TodoForm = () => {
         <div className="col">
           <input ref={ref} type="text" className="form-control" />
         </div>
-        <div className="col">
+        {/* not needed after apiClient implementation and because with onMutate we update the query cache so the UI gets updated right away - no loading time
+         <div className="col">
           <button disabled={addTodo.isLoading} className="btn btn-primary">
             {addTodo.isLoading ? "Adding..." : "Add"}
           </button>
+        </div> */}
+        <div className="col">
+          <button className="btn btn-primary">Add</button>
         </div>
       </form>
     </>

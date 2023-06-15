@@ -2,6 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { CACHE_KEY_TODOS } from "../react-query/constants";
 import { Todo } from "./useTodos";
+import APIClient from "../react-query/services/apiClient";
+
+const apiClient = new APIClient<Todo>("/todos");
 
 interface AddTodoContext {
     previousTodos: Todo[];
@@ -13,10 +16,11 @@ const useAddTodo = (onAdd: () => void) => {
 
    // useMutation(TData - data that we get from the backend, TError - our error object, TVariables - the data that we send to the backend, the context)
    return useMutation<Todo, Error, Todo, AddTodoContext>({
-     mutationFn: (todo: Todo) =>
+    mutationFn: apiClient.post,
+    /* mutationFn: (todo: Todo) =>
        axios
          .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
-         .then((res) => res.data),
+         .then((res) => res.data), */
      // onMutate: (variable data that we send to the back)
      // onMutate Callback - return a context object with the previous todos
      // we update the query cache so the UI gets updated right away - no loading time
