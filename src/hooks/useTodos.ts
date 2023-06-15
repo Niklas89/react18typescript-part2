@@ -1,16 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { CACHE_KEY_TODOS } from "../react-query/constants";
-import APIClient from "../react-query/services/apiClient";
-
-const apiClient = new APIClient<Todo>("/todos");
-
-export interface Todo {
-    id: number;
-    title: string;
-    userId: number;
-    completed: boolean;
-  }
+import todoService, {Todo} from "../react-query/services/todoService";
 
 const useTodos = () => {
     // Benefits of using React Query below:
@@ -33,7 +23,7 @@ const useTodos = () => {
         queryKey: CACHE_KEY_TODOS,
         // queryFn: used to fetch the data from the backend, we reference the function fetchTodos. At runtime react will call this function.
         // queryFn: fetchTodos,
-        queryFn: apiClient.getAll, // we reference getAll function
+        queryFn: todoService.getAll, // we reference getAll function
         staleTime: 10 * 1000 // either configure staleTime individually for every request or globally in the main.tsx file
       });
 }
